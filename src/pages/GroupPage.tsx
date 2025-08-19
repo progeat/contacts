@@ -7,9 +7,10 @@ import { GroupContactsCard } from 'src/components/GroupContactsCard';
 import { Empty } from 'src/components/Empty';
 import { ContactCard } from 'src/components/ContactCard';
 import { useAppSelector } from 'src/store/hooks';
+import { useGetContactsQuery } from 'src/store/contacts';
 
 export const GroupPage: FC = () => {
-  const contactsState = useAppSelector((state) => state.contacts);
+  const { data: contactsState } = useGetContactsQuery();
   const groupContactsState = useAppSelector((state) => state.groups);
   const { groupId } = useParams<{ groupId: string }>();
 
@@ -20,7 +21,7 @@ export const GroupPage: FC = () => {
     const findGroup = groupContactsState.find(({ id }) => id === groupId);
     setGroupContacts(findGroup);
     setContacts(() => {
-      if (findGroup) {
+      if (findGroup && contactsState) {
         return contactsState.filter(({ id }) =>
           findGroup.contactIds.includes(id)
         );

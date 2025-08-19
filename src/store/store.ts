@@ -16,24 +16,22 @@ import {
   favoriteContactsReducer,
   groupContactsReducer,
 } from './reducers';
-
-export type ProjectActions =
-  | ContactsActionsTypes
-  | GroupContactsActionsTypes
-  | FavoriteContactsActionsTypes;
+import { contactsReducerPath } from './contacts';
+import { configureStore } from '@reduxjs/toolkit';
+import { contactsApi } from './contacts/slice';
 
 const rootReducer = combineReducers({
-  contacts: contactsReducer,
-  groups: groupContactsReducer,
-  favorite: favoriteContactsReducer,
+  [contactsReducerPath]: contactsReducer,
+  // groups: groupContactsReducer,
+  // favorite: favoriteContactsReducer,
 });
 
-const composeEnhancers =
-  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(contactsApi.middleware),
+});
 
-export const store: Store<RootState, ProjectActions> = createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(thunk))
-);
+export type AppDispatch = typeof store.dispatch;
 
 export type RootState = ReturnType<typeof rootReducer>;

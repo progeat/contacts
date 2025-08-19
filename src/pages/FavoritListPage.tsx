@@ -3,17 +3,20 @@ import { Col, Row } from 'react-bootstrap';
 import { ContactCard } from 'src/components/ContactCard';
 import { ContactDto } from 'src/types/dto/ContactDto';
 import { useAppSelector } from 'src/store/hooks';
+import { useGetContactsQuery } from 'src/store/contacts';
 
 export const FavoritListPage: FC = () => {
-  const contactsState = useAppSelector((state) => state.contacts);
+  const { data: contactsState } = useGetContactsQuery();
   const favoriteContactsState = useAppSelector((state) => state.favorite);
 
   const [contacts, setContacts] = useState<ContactDto[]>([]);
 
   useEffect(() => {
-    setContacts(() =>
-      contactsState.filter(({ id }) => favoriteContactsState.includes(id))
-    );
+    if (contactsState) {
+      setContacts(() =>
+        contactsState.filter(({ id }) => favoriteContactsState.includes(id))
+      );
+    }
   }, [contactsState, favoriteContactsState]);
 
   return (

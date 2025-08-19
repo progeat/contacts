@@ -4,19 +4,22 @@ import { ContactCard } from 'src/components/ContactCard';
 import { FilterForm, FilterFormValues } from 'src/components/FilterForm';
 import { ContactDto } from 'src/types/dto/ContactDto';
 import { useAppSelector } from 'src/store/hooks';
+import { useGetContactsQuery } from 'src/store/contacts';
 
 export const ContactListPage: FC = () => {
-  const contactsState = useAppSelector((state) => state.contacts);
+  const { data: contactsState } = useGetContactsQuery();
   const groupContactsState = useAppSelector((state) => state.groups);
 
-  const [contacts, setContacts] = useState<ContactDto[]>(contactsState);
+  const [contacts, setContacts] = useState<ContactDto[]>(contactsState ?? []);
 
   useEffect(() => {
-    setContacts(contactsState);
+    if (contactsState) {
+      setContacts(contactsState);
+    }
   }, [contactsState]);
 
   const onSubmit = (fv: Partial<FilterFormValues>) => {
-    let findContacts: ContactDto[] = contactsState;
+    let findContacts: ContactDto[] = contactsState ?? [];
 
     if (fv.name) {
       const fvName = fv.name.toLowerCase();
