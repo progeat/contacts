@@ -2,19 +2,19 @@ import { FC, useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { ContactCard } from 'src/components/ContactCard';
 import { ContactDto } from 'src/types/dto/ContactDto';
-import { useAppSelector } from 'src/store/hooks';
 import { useGetContactsQuery } from 'src/store/contacts';
+import { useGetFavoriteContactsQuery } from 'src/store/favorite';
 
 export const FavoritListPage: FC = () => {
   const { data: contactsState } = useGetContactsQuery();
-  const favoriteContactsState = useAppSelector((state) => state.favorite);
+  const { data: favoriteContactsState } = useGetFavoriteContactsQuery();
 
   const [contacts, setContacts] = useState<ContactDto[]>([]);
 
   useEffect(() => {
     if (contactsState) {
       setContacts(() =>
-        contactsState.filter(({ id }) => favoriteContactsState.includes(id))
+        contactsState.filter(({ id }) => favoriteContactsState?.includes(id))
       );
     }
   }, [contactsState, favoriteContactsState]);
