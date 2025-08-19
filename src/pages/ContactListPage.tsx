@@ -3,20 +3,23 @@ import { Col, Row } from 'react-bootstrap';
 import { ContactCard } from 'src/components/ContactCard';
 import { FilterForm, FilterFormValues } from 'src/components/FilterForm';
 import { ContactDto } from 'src/types/dto/ContactDto';
-import { useAppSelector } from 'src/store/hooks';
+import { useGetContactsQuery } from 'src/store/contacts';
+import { useGetGroupContactsQuery } from 'src/store/groups';
 
 export const ContactListPage: FC = () => {
-  const contactsState = useAppSelector((state) => state.contacts);
-  const groupContactsState = useAppSelector((state) => state.groups);
+  const { data: contactsState } = useGetContactsQuery();
+  const { data: groupContactsState } = useGetGroupContactsQuery();
 
-  const [contacts, setContacts] = useState<ContactDto[]>(contactsState);
+  const [contacts, setContacts] = useState<ContactDto[]>(contactsState ?? []);
 
   useEffect(() => {
-    setContacts(contactsState);
+    if (contactsState) {
+      setContacts(contactsState);
+    }
   }, [contactsState]);
 
   const onSubmit = (fv: Partial<FilterFormValues>) => {
-    let findContacts: ContactDto[] = contactsState;
+    let findContacts: ContactDto[] = contactsState ?? [];
 
     if (fv.name) {
       const fvName = fv.name.toLowerCase();
@@ -25,7 +28,7 @@ export const ContactListPage: FC = () => {
       );
     }
 
-    if (fv.groupId) {
+    if (fv.groupId && groupContactsState) {
       const groupContacts = groupContactsState.find(
         ({ id }) => id === fv.groupId
       );
@@ -44,7 +47,7 @@ export const ContactListPage: FC = () => {
     <Row xxl={1}>
       <Col className="mb-3">
         <FilterForm
-          groupContactsList={groupContactsState}
+          groupContactsList={groupContactsState ?? []}
           initialValues={{}}
           onSubmit={onSubmit}
         />

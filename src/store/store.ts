@@ -1,39 +1,30 @@
+import { combineReducers } from 'redux';
+import { configureStore } from '@reduxjs/toolkit';
+import { contactsReducer, contactsReducerPath } from './contacts';
+import { contactsApi } from './contacts/slice';
+import { groupContactsReducer, groupContactsReducerPath } from './groups';
 import {
-  applyMiddleware,
-  combineReducers,
-  compose,
-  createStore,
-  Store,
-} from 'redux';
-import { thunk } from 'redux-thunk';
-import {
-  ContactsActionsTypes,
-  FavoriteContactsActionsTypes,
-  GroupContactsActionsTypes,
-} from './actions';
-import {
-  contactsReducer,
   favoriteContactsReducer,
-  groupContactsReducer,
-} from './reducers';
-
-export type ProjectActions =
-  | ContactsActionsTypes
-  | GroupContactsActionsTypes
-  | FavoriteContactsActionsTypes;
+  favoriteContactsReducerPath,
+} from './favorite';
+import { groupContactsApi } from './groups/slice';
+import { favoriteContactsApi } from './favorite/slice';
 
 const rootReducer = combineReducers({
-  contacts: contactsReducer,
-  groups: groupContactsReducer,
-  favorite: favoriteContactsReducer,
+  [contactsReducerPath]: contactsReducer,
+  [groupContactsReducerPath]: groupContactsReducer,
+  [favoriteContactsReducerPath]: favoriteContactsReducer,
 });
 
-const composeEnhancers =
-  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .concat(contactsApi.middleware)
+      .concat(groupContactsApi.middleware)
+      .concat(favoriteContactsApi.middleware),
+});
 
-export const store: Store<RootState, ProjectActions> = createStore(
-  rootReducer,
-  composeEnhancers(applyMiddleware(thunk))
-);
+export type AppDispatch = typeof store.dispatch;
 
 export type RootState = ReturnType<typeof rootReducer>;
