@@ -4,16 +4,16 @@ import { useParams } from 'react-router-dom';
 import { ContactDto } from 'src/types/dto/ContactDto';
 import { ContactCard } from 'src/components/ContactCard';
 import { Empty } from 'src/components/Empty';
-import { useAppSelector } from 'src/store/hooks';
+import { useGetContactsQuery } from 'src/store/contacts';
 
 export const ContactPage: FC = () => {
-  const contactsState = useAppSelector((state) => state.contacts);
+  const { data: contactsState } = useGetContactsQuery();
   const { contactId } = useParams<{ contactId: string }>();
 
   const [contact, setContact] = useState<ContactDto>();
 
   useEffect(() => {
-    setContact(() => contactsState.find(({ id }) => id === contactId));
+    setContact(() => contactsState?.find(({ id }) => id === contactId));
   }, [contactsState, contactId]);
 
   return (
