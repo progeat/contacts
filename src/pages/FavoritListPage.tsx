@@ -2,14 +2,18 @@ import { FC, useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { ContactCard } from 'src/components/ContactCard';
 import { ContactDto } from 'src/types/dto/ContactDto';
-import { useGetContactsQuery } from 'src/store/contacts';
-import { useGetFavoriteContactsQuery } from 'src/store/favorite';
+import { observer } from 'mobx-react-lite';
+import { contactsStore, favoriteStore } from 'src/store';
 
-export const FavoritListPage: FC = () => {
-  const { data: contactsState } = useGetContactsQuery();
-  const { data: favoriteContactsState } = useGetFavoriteContactsQuery();
+export const FavoritListPage: FC = observer(() => {
+  const contactsState = contactsStore.contacts;
+  const favoriteContactsState = favoriteStore.favorite;
 
   const [contacts, setContacts] = useState<ContactDto[]>([]);
+
+  useEffect(() => {
+    contactsStore.get();
+  }, []);
 
   useEffect(() => {
     if (contactsState) {
@@ -28,4 +32,4 @@ export const FavoritListPage: FC = () => {
       ))}
     </Row>
   );
-};
+});

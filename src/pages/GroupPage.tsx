@@ -6,16 +6,22 @@ import { GroupContactsDto } from 'src/types/dto/GroupContactsDto';
 import { GroupContactsCard } from 'src/components/GroupContactsCard';
 import { Empty } from 'src/components/Empty';
 import { ContactCard } from 'src/components/ContactCard';
-import { useGetContactsQuery } from 'src/store/contacts';
-import { useGetGroupContactsQuery } from 'src/store/groups';
+import { observer } from 'mobx-react-lite';
+import { contactsStore, groupsStore } from 'src/store';
 
-export const GroupPage: FC = () => {
-  const { data: contactsState } = useGetContactsQuery();
-  const { data: groupContactsState } = useGetGroupContactsQuery();
+export const GroupPage: FC = observer(() => {
+  const contactsState = contactsStore.contacts;
+  const groupContactsState = groupsStore.groups;
+
   const { groupId } = useParams<{ groupId: string }>();
 
   const [contacts, setContacts] = useState<ContactDto[]>([]);
   const [groupContacts, setGroupContacts] = useState<GroupContactsDto>();
+
+  useEffect(() => {
+    contactsStore.get();
+    groupsStore.get();
+  }, []);
 
   useEffect(() => {
     const findGroup = groupContactsState?.find(({ id }) => id === groupId);
@@ -56,4 +62,4 @@ export const GroupPage: FC = () => {
       )}
     </Row>
   );
-};
+});
