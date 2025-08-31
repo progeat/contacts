@@ -4,15 +4,17 @@ import { useParams } from 'react-router-dom';
 import { ContactDto } from 'src/types/dto/ContactDto';
 import { ContactCard } from 'src/components/ContactCard';
 import { Empty } from 'src/components/Empty';
-import { useGetContactsQuery } from 'src/store/contacts';
+import { observer } from 'mobx-react-lite';
+import { contactsStore } from 'src/store';
 
-export const ContactPage: FC = () => {
-  const { data: contactsState } = useGetContactsQuery();
+export const ContactPage: FC = observer(() => {
+  const contactsState = contactsStore.contacts;
   const { contactId } = useParams<{ contactId: string }>();
 
   const [contact, setContact] = useState<ContactDto>();
 
   useEffect(() => {
+    contactsStore.get();
     setContact(() => contactsState?.find(({ id }) => id === contactId));
   }, [contactsState, contactId]);
 
@@ -23,4 +25,4 @@ export const ContactPage: FC = () => {
       </Col>
     </Row>
   );
-};
+});

@@ -3,14 +3,19 @@ import { Col, Row } from 'react-bootstrap';
 import { ContactCard } from 'src/components/ContactCard';
 import { FilterForm, FilterFormValues } from 'src/components/FilterForm';
 import { ContactDto } from 'src/types/dto/ContactDto';
-import { useGetContactsQuery } from 'src/store/contacts';
-import { useGetGroupContactsQuery } from 'src/store/groups';
+import { observer } from 'mobx-react-lite';
+import { contactsStore, groupsStore } from 'src/store';
 
-export const ContactListPage: FC = () => {
-  const { data: contactsState } = useGetContactsQuery();
-  const { data: groupContactsState } = useGetGroupContactsQuery();
+export const ContactListPage: FC = observer(() => {
+  const contactsState = contactsStore.contacts;
+  const groupContactsState = groupsStore.groups;
 
   const [contacts, setContacts] = useState<ContactDto[]>(contactsState ?? []);
+
+  useEffect(() => {
+    contactsStore.get();
+    groupsStore.get();
+  }, []);
 
   useEffect(() => {
     if (contactsState) {
@@ -63,4 +68,4 @@ export const ContactListPage: FC = () => {
       </Col>
     </Row>
   );
-};
+});

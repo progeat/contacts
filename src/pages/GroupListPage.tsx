@@ -1,10 +1,15 @@
-import { FC } from 'react';
+import { observer } from 'mobx-react-lite';
+import { FC, useEffect } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { GroupContactsCard } from 'src/components/GroupContactsCard';
-import { useGetGroupContactsQuery } from 'src/store/groups';
+import { groupsStore } from 'src/store';
 
-export const GroupListPage: FC = () => {
-  const { data: groupContactsState } = useGetGroupContactsQuery();
+export const GroupListPage: FC = observer(() => {
+  const groupContactsState = groupsStore.groups;
+
+  useEffect(() => {
+    groupsStore.get();
+  }, []);
 
   return (
     <Row xxl={4}>
@@ -15,4 +20,4 @@ export const GroupListPage: FC = () => {
       ))}
     </Row>
   );
-};
+});
